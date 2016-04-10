@@ -1,5 +1,10 @@
 extern crate image;
 
+mod wavefront;
+
+use wavefront::{Obj, Tri};
+
+use std::env;
 use std::fs::File;
 use std::mem;
 use std::path::Path;
@@ -14,23 +19,53 @@ const BLACK: [u8; 4] = [0x00, 0x00, 0x00, 0xff];
 const RED: [u8; 4] = [0xff, 0x00, 0x00, 0xff];
 
 fn main() {
-    let mut img = ImageBuffer::from_pixel(1000, 1000, Rgba(BLACK));
+    let model = Obj::from_file(&Path::new(&env::args().nth(1).expect("Specify path to model")))
+                    .expect("Failed to load model");
+    println!("Loaded model, vertices: {}, faces: {}",
+             model.vertices.len(),
+             model.faces.len());
 
-    line(130, 200, 800, 400, &mut img, Rgba(WHITE));
-    line(200, 130, 400, 800, &mut img, Rgba(RED));
-    line(800, 400, 130, 200, &mut img, Rgba(RED));
+    let width = env::args()
+                    .nth(2)
+                    .map(|s| s.parse::<u32>().expect(&format!("Invalid width: {}", s)))
+                    .unwrap_or(1000);
+    let height = env::args()
+                     .nth(3)
+                     .map(|s| s.parse::<u32>().expect(&format!("Invalid height: {}", s)))
+                     .unwrap_or(width);
+
+    let mut img = ImageBuffer::from_pixel(width, height, Rgba(BLACK));
+
+    for f in model.faces {
+        let tri = Tri(model.vertices[f.vertices.0],
+                      model.vertices[f.vertices.1],
+                      model.vertices[f.vertices.2]);
+
+        for l in tri.lines() {
+            let x0 = (l.0.x + 1.0) * width as f32 / 2.0;
+            let y0 = (l.0.y + 1.0) * height as f32 / 2.0;
+            let x1 = (l.1.x + 1.0) * width as f32 / 2.0;
+            let y1 = (l.1.y + 1.0) * height as f32 / 2.0;
+            draw_line(x0 as u32,
+                      y0 as u32,
+                      x1 as u32,
+                      y1 as u32,
+                      &mut img,
+                      Rgba(WHITE));
+        }
+    }
 
     let ref mut file = File::create(&Path::new("out/test.png"))
                            .expect("Failed to create image file");
     image::ImageRgba8(img).flipv().save(file, image::PNG).expect("Failed to write image data");
 }
 
-fn line<T>(mut x0: u32,
-           mut y0: u32,
-           mut x1: u32,
-           mut y1: u32,
-           img: &mut ImageBuffer<T, Vec<u8>>,
-           color: T)
+fn draw_line<T>(mut x0: u32,
+                mut y0: u32,
+                mut x1: u32,
+                mut y1: u32,
+                img: &mut ImageBuffer<T, Vec<u8>>,
+                color: T)
     where T: image::Pixel<Subpixel = u8> + 'static
 {
     let steep = (x0 as i64 - x1 as i64).abs() < (y0 as i64 - y1 as i64).abs();
@@ -52,10 +87,12 @@ fn line<T>(mut x0: u32,
     let mut y = y0;
 
     for x in x0..x1 {
-        if steep {
-            img.put_pixel(y, x, color);
-        } else {
-            img.put_pixel(x, y, color);
+        if x < img.width() && y < img.height() {
+            if steep {
+                img.put_pixel(y, x, color);
+            } else {
+                img.put_pixel(x, y, color);
+            }
         }
         error2 += derror2;
 
