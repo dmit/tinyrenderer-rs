@@ -47,21 +47,21 @@ impl Vert {
         let mut coords = s.split_whitespace();
 
         let x_str = try!(coords.next()
-                               .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read x")));
+            .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read x")));
         let x = try!(x_str.parse::<f32>().map_err(|err| {
             IOErr::new(ErrorKind::InvalidData,
                        format!("invalid format for x: {}", err.description()))
         }));
 
         let y_str = try!(coords.next()
-                               .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read y")));
+            .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read y")));
         let y = try!(y_str.parse::<f32>().map_err(|err| {
             IOErr::new(ErrorKind::InvalidData,
                        format!("invalid format for y: {}", err.description()))
         }));
 
         let z_str = try!(coords.next()
-                               .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read z")));
+            .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read z")));
         let z = try!(z_str.parse::<f32>().map_err(|err| {
             IOErr::new(ErrorKind::InvalidData,
                        format!("invalid format for z: {}", err.description()))
@@ -80,43 +80,37 @@ impl Face {
         let mut coords = s.split_whitespace();
 
         let x_str = try!(coords.next()
-                               .ok_or(IOErr::new(ErrorKind::InvalidData,
-                                                 "failed to read x group")));
+            .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read x group")));
         let mut x_group = x_str.split('/');
-        let x_v = try!(try!(x_group.next().ok_or(IOErr::new(ErrorKind::InvalidData,
-                                                            "failed to read x vertex id")))
-                           .parse::<usize>()
-                           .map_err(|err| {
-                               IOErr::new(ErrorKind::InvalidData,
-                                          format!("invalid format for x vertex id: {}",
-                                                  err.description()))
-                           }));
+        let x_v = try!(try!(x_group.next()
+                .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read x vertex id")))
+            .parse::<usize>()
+            .map_err(|err| {
+                IOErr::new(ErrorKind::InvalidData,
+                           format!("invalid format for x vertex id: {}", err.description()))
+            }));
 
         let y_str = try!(coords.next()
-                               .ok_or(IOErr::new(ErrorKind::InvalidData,
-                                                 "failed to read y group")));
+            .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read y group")));
         let mut y_group = y_str.split('/');
-        let y_v = try!(try!(y_group.next().ok_or(IOErr::new(ErrorKind::InvalidData,
-                                                            "failed to read y vertex id")))
-                           .parse::<usize>()
-                           .map_err(|err| {
-                               IOErr::new(ErrorKind::InvalidData,
-                                          format!("invalid format for y vertex id: {}",
-                                                  err.description()))
-                           }));
+        let y_v = try!(try!(y_group.next()
+                .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read y vertex id")))
+            .parse::<usize>()
+            .map_err(|err| {
+                IOErr::new(ErrorKind::InvalidData,
+                           format!("invalid format for y vertex id: {}", err.description()))
+            }));
 
         let z_str = try!(coords.next()
-                               .ok_or(IOErr::new(ErrorKind::InvalidData,
-                                                 "failed to read z group")));
+            .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read z group")));
         let mut z_group = z_str.split('/');
-        let z_v = try!(try!(z_group.next().ok_or(IOErr::new(ErrorKind::InvalidData,
-                                                            "failed to read z vertex id")))
-                           .parse::<usize>()
-                           .map_err(|err| {
-                               IOErr::new(ErrorKind::InvalidData,
-                                          format!("invalid format for z vertex id: {}",
-                                                  err.description()))
-                           }));
+        let z_v = try!(try!(z_group.next()
+                .ok_or(IOErr::new(ErrorKind::InvalidData, "failed to read z vertex id")))
+            .parse::<usize>()
+            .map_err(|err| {
+                IOErr::new(ErrorKind::InvalidData,
+                           format!("invalid format for z vertex id: {}", err.description()))
+            }));
 
         let f = Face { vertices: (x_v - 1, y_v - 1, z_v - 1) };
         Ok(f)

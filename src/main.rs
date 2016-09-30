@@ -16,23 +16,23 @@ type Image = ImageBuffer<Color, Vec<u8>>;
 
 const WHITE: [u8; 4] = [0xff, 0xff, 0xff, 0xff];
 const BLACK: [u8; 4] = [0x00, 0x00, 0x00, 0xff];
-const RED: [u8; 4] = [0xff, 0x00, 0x00, 0xff];
+//const RED: [u8; 4] = [0xff, 0x00, 0x00, 0xff];
 
 fn main() {
-    let model = Obj::from_file(&Path::new(&env::args().nth(1).expect("Specify path to model")))
-                    .expect("Failed to load model");
+    let model = Obj::from_file(Path::new(&env::args().nth(1).expect("Specify path to model")))
+        .expect("Failed to load model");
     println!("Loaded model, vertices: {}, faces: {}",
              model.vertices.len(),
              model.faces.len());
 
     let width = env::args()
-                    .nth(2)
-                    .map(|s| s.parse::<u32>().expect(&format!("Invalid width: {}", s)))
-                    .unwrap_or(1000);
+        .nth(2)
+        .map_or(1000,
+                |s| s.parse::<u32>().expect(&format!("Invalid width: {}", s)));
     let height = env::args()
-                     .nth(3)
-                     .map(|s| s.parse::<u32>().expect(&format!("Invalid height: {}", s)))
-                     .unwrap_or(width);
+        .nth(3)
+        .map_or(width,
+                |s| s.parse::<u32>().expect(&format!("Invalid height: {}", s)));
 
     let mut img = ImageBuffer::from_pixel(width, height, Rgba(BLACK));
 
@@ -55,9 +55,8 @@ fn main() {
         }
     }
 
-    let ref mut file = File::create(&Path::new("out/test.png"))
-                           .expect("Failed to create image file");
-    image::ImageRgba8(img).flipv().save(file, image::PNG).expect("Failed to write image data");
+    let mut file = File::create(&Path::new("out/test.png")).expect("Failed to create image file");
+    image::ImageRgba8(img).flipv().save(&mut file, image::PNG).expect("Failed to write image data");
 }
 
 fn draw_line<T>(mut x0: u32,

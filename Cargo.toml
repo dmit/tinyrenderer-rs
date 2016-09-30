@@ -3,5 +3,8 @@ name = "tinyrenderer-rs"
 version = "0.1.0"
 authors = ["dmit"]
 
+[[bin]]
+name = "tinyrender"
+
 [dependencies]
-image = "0.8.0"
+image = "0.10"
