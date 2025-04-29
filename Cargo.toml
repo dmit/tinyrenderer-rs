@@ -5,4 +5,5 @@ edition = "2024"
 publish = false
 
 [dependencies]
+argh = "0.1.13"
 image = { version = "0.25", default-features = false, features = ["png"] }
