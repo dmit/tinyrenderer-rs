@@ -1,7 +1,8 @@
 [package]
 name = "tiny"
 version = "0.1.0"
-authors = ["dmit"]
+edition = "2024"
+publish = false
 
 [dependencies]
-image = "0.14"
+image = { version = "0.25", default-features = false, features = ["png"] }
