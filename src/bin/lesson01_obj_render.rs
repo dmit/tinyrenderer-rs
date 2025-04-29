@@ -1,6 +1,6 @@
 use std::{env, mem, path::Path};
 
-use image::{ImageBuffer, Rgba};
+use image::{ImageBuffer, Rgba, imageops::flip_vertical_in_place};
 use tiny::wavefront::{Obj, Tri};
 
 const WHITE: [u8; 4] = [0xff, 0xff, 0xff, 0xff];
@@ -36,6 +36,7 @@ fn main() {
         }
     }
 
+    flip_vertical_in_place(&mut img);
     img.save("out/lesson01.png").expect("Failed to write image data");
 }
 
